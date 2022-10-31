@@ -23,6 +23,9 @@ from requests.auth import HTTPBasicAuth
 from .app import Hydroviewer as app
 from .helpers import *
 
+from .model import Stations_manage
+
+
 base_name = __package__.split('.')[-1]
 
 
@@ -41,9 +44,12 @@ def set_custom_setting(defaultModelName, defaultWSName):
 
 
 def home(request):
-    # Check if we have a default model. If we do, then redirect the user to the default model's page
+    # Check if we have a default model. If we do, then redirect 
+    # the user to the default model's page
     default_model = app.get_custom_setting('default_model_type')
     if default_model:
+        # TODO: var switch_model is not defined as global or local
+        # function.
         model_func = switch_model(default_model)
         if model_func is not 'invalid':
             return globals()[model_func](request)
@@ -98,6 +104,12 @@ def get_popup_response(request):
     return JsonResponse({})
 
 def ecmwf(request):
+
+    # Global oriented objects build at build of the 
+    # start of the app.
+
+    global stations
+
     # Can Set Default permissions : Only allowed for admin users
     can_update_default = has_permission(request, 'update_default')
 
@@ -279,6 +291,20 @@ def ecmwf(request):
         select2_options={'placeholder': 'Select a Subbasin', 'allowClear': False}
     )
 
+	# Search functions
+    filepath_stations = os.path.join(os.path.dirname(__file__), 'public', 'stations', 'FEWS_Stations_N.json')
+    stations = Stations_manage(dir_path=filepath_stations)
+    
+    station_list = stations.get_search_list()
+    search_list = SelectInput(
+        display_text="Search:",
+        name="searchList",
+        multiple=False,
+        options=[(opt.capitalize(), opt) for opt in station_list],
+        initial="",
+        select2_options={'placeholder' : 'Busqueda', 'allowClear': False}
+    )
+
     context = {
         "base_name": base_name,
         "model_input": model_input,
@@ -289,9 +315,12 @@ def ecmwf(request):
         "startdateobs": startdateobs,
         "enddateobs": enddateobs,
         "date_picker": date_picker,
+        
         "regions": regions,
         "basins": basins,
         "subbasins": subbasins,
+
+        "searchList":search_list,
     }
 
     return render(request, '{0}/ecmwf.html'.format(base_name), context)
@@ -1298,3 +1327,23 @@ def get_sensor_waterlevel_csv(request):
     except Exception as e:
         print(str(e))
         return JsonResponse({'error': 'An unknown error occurred while retrieving the Water Level Data.'})
+
+
+def get_station_directories(request):
+    global stations
+
+    try:
+        id_search = request.GET['data_search']
+        output_file, output_station_file, message, _, _ = stations(search_id=id_search)
+        
+        return JsonResponse({
+            "boundary" : output_file,
+            "stations" : output_station_file,
+            "message"  : message,
+        })
+
+    except Exception as e:
+        print(str(e))
+        return JsonResponse({'error': 'An unknown error occurred while retrieving build data search.'})
+
+    
