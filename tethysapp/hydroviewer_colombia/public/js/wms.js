@@ -214,14 +214,12 @@ function toggleAcc(layerID) {
 }
 
 
-
 function init_map() {
 
     var base_layer = new ol.layer.Tile({
         source: new ol.source.OSM({
         })
     });
-
 
     wms_layers = [
         new ol.layer.Tile({

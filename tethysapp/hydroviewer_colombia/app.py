@@ -235,7 +235,6 @@ class Hydroviewer(TethysAppBase):
             CustomSetting(
                 name='default_model_type',
                 type=CustomSetting.TYPE_STRING,
-                #description='Default Model Type : (Options : ECMWF-RAPID, LIS-RAPID)',
                 description='Default Model Type : (Options : ECMWF-RAPID)',
                 required=False,
                 default='ECMWF-RAPID',
