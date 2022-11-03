@@ -1418,10 +1418,14 @@ function getSearchData () {
                 console.log(stations_file);
 
                 var boundarySource = new ol.source.Vector({
-                    url: staticStations + boundary_file,
-                    format: new ol.format.GeoJSON()
-                 });
-         
+                });
+                boundarySource.addFeatures(
+                  new ol.format.GeoJSON().readFeatures(boundary_file, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: map.getView().getProjection()
+                  })
+                );
+
                  var boundaryStyle = new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: 'rgba(0, 0, 0, 0)', // Change
@@ -1435,10 +1439,14 @@ function getSearchData () {
                     style: boundaryStyle
                  });
 
-                 var stationsSource = new ol.source.Vector({
-                    url: staticStations + stations_file,
-                    format: new ol.format.GeoJSON()
-                 });
+                var stationsSource = new ol.source.Vector({
+                });
+                stationsSource.addFeatures(
+                  new ol.format.GeoJSON().readFeatures(stations_file, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: map.getView().getProjection()
+                  })
+                );
          
                  var stationsStyle = new ol.style.Style({
                     image: new ol.style.Circle({

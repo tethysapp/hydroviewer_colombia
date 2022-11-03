@@ -292,9 +292,9 @@ def ecmwf(request):
     )
 
 	# Search functions
-    filepath_stations = os.path.join(os.path.dirname(__file__), 'public', 'stations', 'FEWS_Stations_N.json')
+    filepath_stations = os.path.join(os.path.join(app.get_app_workspace().path), 'FEWS_Stations_N.json')
     stations = Stations_manage(dir_path=filepath_stations)
-    
+
     station_list = stations.get_search_list()
     search_list = SelectInput(
         display_text="Search:",
@@ -1334,12 +1334,12 @@ def get_station_directories(request):
 
     try:
         id_search = request.GET['data_search']
-        output_file, output_station_file, message, _, _ = stations(search_id=id_search)
-        
+        output_file, output_station_file, message, estaciones, boundary = stations(search_id=id_search)
+
         return JsonResponse({
-            "boundary" : output_file,
-            "stations" : output_station_file,
-            "message"  : message,
+            "boundary": boundary,
+            "stations": estaciones,
+            "message": message,
         })
 
     except Exception as e:
