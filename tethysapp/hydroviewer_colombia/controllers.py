@@ -24,7 +24,7 @@ from .app import Hydroviewer as app
 from .helpers import *
 
 from .model import Stations_manage
-
+from .model import get_geoJSON_from_id
 
 base_name = __package__.split('.')[-1]
 
@@ -293,17 +293,49 @@ def ecmwf(request):
 
 	# Search functions
     filepath_stations = os.path.join(os.path.join(app.get_app_workspace().path), 'FEWS_Stations_N.json')
+    
     stations = Stations_manage(dir_path=filepath_stations)
-
     station_list = stations.get_search_list()
     search_list = SelectInput(
-        display_text="Search:",
+        display_text="Search staions:",
         name="searchList",
         multiple=False,
         options=[(opt.capitalize(), opt) for opt in station_list],
         initial="",
-        select2_options={'placeholder' : 'Busqueda', 'allowClear': False}
+        select2_options={'placeholder' : 'Station id, name river, etc.', 'allowClear': False}
     )
+
+
+    # Search by COMID
+    comit_index_file = os.path.join(app.get_app_workspace().path, 'colombia-geoglows-drainage_comid_index.txt')
+    with open(comit_index_file, 'r') as f:
+        comid_search_list = [row.replace(',', '').replace("'", "") for row in f.read().splitlines()]
+    comid_search_gizmo = SelectInput(
+        display_text="Search by COMID:",
+        name="searchComid",
+        multiple=False,
+        options=[(opt.capitalize(), opt) for opt in comid_search_list],
+        initial="",
+        select2_options={'placeholder' : 'comid', 'allowClear': False}
+    )
+
+    '''
+    # Search Hydrological Region
+    region_index_file = os.path.join(app.get_app_workspace().path, 'colombia-geoglows-drainage_region_index.txt')
+    with open(region_index_file, 'r') as f:
+        region_search_list = [row.replace(',', '').replace("'", "") for row in f.read().splitlines()]
+    '''
+    region_search_gizmo = SelectInput(
+        display_text="Search by world region:",
+        name="searchWorldRegion",
+        multiple=False,
+        # options=[(opt.capitalize(), opt) for opt in region_search_list],
+        options = [(opt, opt) for opt in ['']],
+        initial="",
+        select2_options={'placeholder' : 'World region', 'allowClear': False}
+    )
+
+
 
     context = {
         "base_name": base_name,
@@ -320,6 +352,8 @@ def ecmwf(request):
         "basins": basins,
         "subbasins": subbasins,
 
+        "region_search_gizmo" : region_search_gizmo,
+        "comid_search_gizmo" : comid_search_gizmo,
         "searchList":search_list,
     }
 
@@ -1344,6 +1378,38 @@ def get_station_directories(request):
 
     except Exception as e:
         print(str(e))
-        return JsonResponse({'error': 'An unknown error occurred while retrieving build data search.'})
+        return JsonResponse({'error': 'An unknown error occurred while retrieving build data search.'}) 
 
-    
+
+def get_search_comid(request):
+    '''
+    Search by comid selected.
+    '''
+    try:
+        file_path = os.path.join(app.get_app_workspace().path, 'colombia-geoglows-drainage_line.json')
+        search_id = request.GET['search_value']
+        main_cols = {'int column name' : ['COMID'],
+					 'str column name' : []}     
+
+        boundary_geoJSON, _ = get_geoJSON_from_id(file_path=file_path, search_id=search_id, main_cols=main_cols)
+
+        return JsonResponse({'boundary_geoJSON':boundary_geoJSON})
+    except Exception as e:
+        return JsonResponse({'error': 'An unknown error occured while retrieving get search comid '})
+
+
+def get_search_world_region(request):
+    '''
+    Search by world region selected.
+    '''
+    try:
+        file_path = os.path.join(app.get_app_workspace().path, 'colombia-geoglows-drainage_line.json')
+        search_id = request.GET['search_value']
+        main_cols = {'int column name' : [],
+                     'str column name' : ['region']}
+
+        boundary_geoJSON, poly_geoJSON = get_geoJSON_from_id(file_path=file_path, search_id=search_id, main_cols=main_cols)
+        
+        return JsonResponse({'boundary_geoJSON': boundary_geoJSON,   "polygons_geoJSON": poly_geoJSON })
+    except Exception as e:
+        return JsonResponse({'error': 'An unknown error occured while retrieving get search world region'})

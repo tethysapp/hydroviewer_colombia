@@ -1374,9 +1374,11 @@ function getSubBasinGeoJsons() {
     }
 }
 
+
 function getSearchData () {
+	// Searching form station features, like id, string location and others found
+	// in the database of the staions.
 	let search_value = $("#searchList").val();
-    console.log(search_value);
     $.ajax({
         type    : 'GET',
         url     : 'get-station-directories',
@@ -1413,9 +1415,6 @@ function getSearchData () {
                     $("#search-alert").addClass('hidden');
                 }, 1500);
             } else {
-                console.log(message);
-                console.log(boundary_file);
-                console.log(stations_file);
 
                 var boundarySource = new ol.source.Vector({
                 });
@@ -1494,12 +1493,157 @@ function getSearchData () {
                             map.removeLayer(stationLayer);
                     });
                 }, 10000);
-
-
             }
-
         },
     });
+}
+
+
+function getSearchComid() {
+	// Function to search by comid of strams
+	let search_value = $("#searchComid").val();
+	console.log("Get search comid start.");
+	// Add sarch icon
+	document.getElementById('featureLoader').style.display = "";
+
+    $.ajax({
+        type    : 'GET',
+        url     : 'get-search-comid',
+        data    : {'search_value' : search_value},
+		error   : function () {
+			$('#search-alert').html(
+                '<p class="alert alert-danger" style="text-align: center"><strong>Busqueda invalida.</strong></p>'
+            );
+            $("#search-alert").removeClass('hidden');
+
+            setTimeout(function () {
+				$('#search-alert').html(
+                    '<p></p>'
+                );
+                $("#search-alert").addClass('hidden');
+            }, 1500);
+        },
+		success : function (resp) {
+			// Remove search icon
+			document.getElementById('featureLoader').style.display = "none";
+		
+			// Request variables
+			// TODO: Test with call wms server direct.
+			var boundary_file = resp["boundary_geoJSON"];
+
+		    var boundarySource = new ol.source.Vector({ });
+			boundarySource.addFeatures(
+				new ol.format.GeoJSON().readFeatures(boundary_file, {
+                	dataProjection: 'EPSG:4326',
+                    featureProjection: map.getView().getProjection()
+				})
+			);
+			
+
+			var boundaryStyle = new ol.style.Style({
+				stroke: new ol.style.Stroke({
+            		color: 'rgba(0, 0, 0, 0)', // Change
+                    width: 0, // Change
+                    })
+                });
+		
+            var boundaryLayer = new ol.layer.Vector({
+            	name: 'myBoundary',
+                source: boundarySource,
+                style: boundaryStyle
+            	});
+			
+			// Remove back data
+            map.getLayers().forEach(function(boundaryLayer) {
+            	if (boundaryLayer.get('name')=='myBoundary'){
+                	map.removeLayer(boundaryLayer);
+				}
+            });
+
+
+			map.addLayer(boundaryLayer)
+			
+			// Animation for extend map
+            setTimeout(function() {
+            	var myExtent = boundaryLayer.getSource().getExtent();
+                map.getView().fit(myExtent, map.getSize());
+            }, 500);
+
+		 	console.log("Search COMID end.");
+		},
+	});
+}
+
+
+function getSearchWorldRegion() {
+	// Function to search by world region
+	console.log("Start search by world region.");
+	let search_value = $("#searchWorldRegion").val();
+	document.getElementById('featureLoader').style.display = "";
+    $.ajax({
+        type    : 'GET',
+        url     : 'get-search-world-region',
+        data    : {'search_value' : search_value},
+        error   : function () {
+            $('#search-alert').html(
+                '<p class="alert alert-danger" style="text-align: center"><strong>Busqueda invalida.</strong></p>'
+            );
+            $("#search-alert").removeClass('hidden');
+
+            setTimeout(function () {
+                $('#search-alert').html(
+                    '<p></p>'
+                );
+                $("#search-alert").addClass('hidden');
+            }, 1500);
+        },
+        success : function (resp) {
+			// Remove search icon
+			document.getElementById('featureLoader').style.display = "none";
+		
+			// Request variables
+			// TODO: Test with call wms server direct.
+			var boundary_file = resp["boundary_geoJSON"];
+		
+
+		    var boundarySource = new ol.source.Vector({ });
+			boundarySource.addFeatures(
+				new ol.format.GeoJSON().readFeatures(boundary_file, {
+                	dataProjection: 'EPSG:4326',
+                    featureProjection: map.getView().getProjection()
+				})
+			);
+
+			var boundaryStyle = new ol.style.Style({
+				stroke: new ol.style.Stroke({
+            		color: 'rgba(0, 0, 0, 0)', // Change
+                    width: 0, // Change
+                    })
+                });
+
+            var boundaryLayer = new ol.layer.Vector({
+            	name: 'myBoundary',
+                source: boundarySource,
+                style: boundaryStyle
+            	});
+
+			// Remove back data
+            map.getLayers().forEach(function(boundaryLayer) {
+            	if (boundaryLayer.get('name')=='myBoundary')
+                	map.removeLayer(boundaryLayer);
+            });
+
+			map.addLayer(boundaryLayer)
+
+			// Animation for extend map
+            setTimeout(function() {
+            	var myExtent = boundaryLayer.getSource().getExtent();
+                map.getView().fit(myExtent, map.getSize());
+            }, 500);
+
+			console.log("End search by world region.");
+		},
+	});
 }
 
 
@@ -1533,3 +1677,6 @@ $('#regions').change(function() {getRegionGeoJsons()});
 $('#basins').change(function() {getBasinGeoJsons()});
 $('#subbasins').change(function() {getSubBasinGeoJsons()});
 $('#searchList').change(function() {getSearchData()});
+$('#searchComid').change(function() {getSearchComid()});
+//$('#searchWorldRegion').change(function() {getSearchWorldRegion()});
+

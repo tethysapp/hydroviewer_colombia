@@ -187,10 +187,22 @@ class Hydroviewer(TethysAppBase):
                 name='get_sensor_waterlevel_csv',
                 url='ecmwf-rapid/get-sensor-waterlevel-csv',
                 controller='{0}.controllers.get_sensor_waterlevel_csv'.format(base_name)),
+            # Funtion to search by station feature
             UrlMap(
                 name='get_stations_directories',
                 url='get-station-directories',
                 controller='{0}.controllers.get_station_directories'.format(base_name)),
+           # Function to search by comid
+            UrlMap(
+                name='get_search_comid',
+                url='get-search-comid',
+                controller='{0}.controllers.get_search_comid'.format(base_name)),
+           # Function to search by world region
+
+            UrlMap(
+                name='get_search_world_region',
+                url='get-search-world-region',
+                controller='{0}.controllers.get_search_world_region'.format(base_name)),
         )
 
         return url_maps
