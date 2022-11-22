@@ -191,6 +191,16 @@ class Hydroviewer(TethysAppBase):
                 name='get_stations_directories',
                 url='get-station-directories',
                 controller='{0}.controllers.get_station_directories'.format(base_name)),
+            UrlMap(
+                name = 'user_manual',
+                url = '{0}/user-manual'.format(base_name),
+                controller='{0}.controllers.user_manual'.format(base_name),
+            ),
+            UrlMap(
+                name = 'technical_manual',
+                url = '{0}/technical-manual'.format(base_name),
+                controller='{0}.controllers.technical_manual'.format(base_name),
+            ),
         )
 
         return url_maps

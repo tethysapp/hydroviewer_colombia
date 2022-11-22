@@ -258,37 +258,37 @@ def ecmwf(request):
     #Select Region
     region_index = json.load(open(os.path.join(os.path.dirname(__file__), 'public', 'geojson', 'index.json')))
     regions = SelectInput(
-        display_text='Zoom to a Region:',
+        display_text='Zoom al Departamento:',
         name='regions',
         multiple=False,
         #original=True,
         options=[(region_index[opt]['name'], opt) for opt in region_index],
         initial='',
-        select2_options={'placeholder': 'Select a Region', 'allowClear': False}
+        select2_options={'placeholder': 'Selección de departamento', 'allowClear': False}
     )
 
     # Select Basins
     basin_index = json.load(open(os.path.join(os.path.dirname(__file__), 'public', 'geojson2', 'index2.json')))
     basins = SelectInput(
-        display_text='Zoom to a Basin:',
+        display_text='Zoom a Z.H.:',
         name='basins',
         multiple=False,
         # original=True,
         options=[(basin_index[opt]['name'], opt) for opt in basin_index],
         initial='',
-        select2_options={'placeholder': 'Select a Basin', 'allowClear': False}
+        select2_options={'placeholder': 'Zona hidrográfica', 'allowClear': False}
     )
 
     # Select SubBasins
     subbasin_index = json.load(open(os.path.join(os.path.dirname(__file__), 'public', 'geojson3', 'index3.json')))
     subbasins = SelectInput(
-        display_text='Zoom to a Subbasin:',
+        display_text='Zoom a S.Z.H.:',
         name='subbasins',
         multiple=False,
         # original=True,
         options=[(subbasin_index[opt]['name'], opt) for opt in subbasin_index],
         initial='',
-        select2_options={'placeholder': 'Select a Subbasin', 'allowClear': False}
+        select2_options={'placeholder': 'Sub Zona Hidrográfica.', 'allowClear': False}
     )
 
 	# Search functions
@@ -297,7 +297,7 @@ def ecmwf(request):
 
     station_list = stations.get_search_list()
     search_list = SelectInput(
-        display_text="Search:",
+        display_text="Selección por estación:",
         name="searchList",
         multiple=False,
         options=[(opt.capitalize(), opt) for opt in station_list],
@@ -1346,4 +1346,11 @@ def get_station_directories(request):
         print(str(e))
         return JsonResponse({'error': 'An unknown error occurred while retrieving build data search.'})
 
-    
+############################################################
+def user_manual(request):
+    context = {}
+    return render(request, 'hydroviewer_colombia/user_manual.html', context)
+
+def technical_manual(request):
+    context = {}
+    return render(request, 'hydroviewer_colombia/technical_manual.html', context)

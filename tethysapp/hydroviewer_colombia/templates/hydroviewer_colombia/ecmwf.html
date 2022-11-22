@@ -313,26 +313,84 @@
 <div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="about-modal-label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h2 class="modal-title" id="about-modal-label">About HydroViewer</h2>
       </div>
-      <div class="modal-body">
-        <p id="overview"><b>
-          This web application was created to allow users to visualize the results of the global hydrologic model
-          GEOGloWS ECMWF Streamflow Services.
-        </b></p>
-        <h3>How it works</h3>
-        <h6>1. Click on any of the stream reaches within the watershed.</h6>
-        <h6>2. A hydrograph for the selected reach with the most current streamflow result will be displayed
-          in the graph area next to the map.</h6>
-        <h6>3. If previous dates are available, the Select Date dropdown will be displayed on top of the graph.
-          Select any of the available dates to display the forecast for that specific date in the graph.</h6>
-        <h6>4. Click the close button to exit the application.</h6>
 
-        <h5>Additional Resources:</h5>
-        <p><a href="https://geoglows.ecmwf.int/documentation" target="_blank">GEOGloWS ECMWF Global Forecasts</a></p>
+      <div class="modal-body">
+        <p>La app <strong>Hydroviewer personalizada para Colombia</strong> es una 
+          aplicación cuyo objetivo es observar los resultados de las simulaciones 
+          históricas, los pronósticos generados y los sitiops en que el pronostico
+          supere los rangos de periodo de retorno estipulado por el modelo 
+          <a href="https://geoglows.ecmwf.int/">GeoGloWS ECMWF Streamflow</a> 
+          para el territorio colombiano.</p> 
+            
+        <p>Esta aplicación nos permite, ver los resultados generados por el modelo
+          en todos los cauces modelados por el modelo 
+          <a href="https://geoglows.ecmwf.int/">GeoGloWS ECMWF Streamflow</a> 
+          a nivel nacional, el caudal observado en las estaciones de medición 
+          del Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM) 
+          de Colombia y el nivel de alerta alcanzado por el caudal pronosticado.</p>
+          
+          <p>Los usuarios pueden hacer uso de la búsqueda por sectores (departamentos, 
+            zonas hidrográficas, subzonas hidrográficas o nombre de la estación, 
+            código de la estación o nombre de la corriente) ubicada en la parte 
+            inferior izquierda de la pantalla y posteriormente hacer clic en la 
+            estación o en los cauces del del mapa para obtener las series de caudales 
+            observados y simuladas.</p> 
+            
+          <p>Al seleccionar una estacion, se abrirá una ventana donde el usuario 
+            se encontrará con las características de la estación (nombre y código)
+            ademas de las siguientes pestañas:</p>
+
+            <ol> 
+              <li> La primera pestaña muestra la serie de caudal observado, donde
+                se encuentran las series de caudal observado y la serie de caudal
+                observado por medio de sensor de los últimos meses.</li> 
+            <li> La segunda pestaña muestra la serie de nivel observado, donde
+              se encuentran las series de nivel observado y la serie de nivel
+              observado por medio de sensor de los últimos meses.</li>
+            <li> La tercera pestaña incluye los links de descarga de las series 
+              previamente mostradas.</li> 
+            </ol>
+
+            <p>De manera similar, al seleccionar un cauce, se abrirá una ventana 
+              donde el usuario con las siguientes pestañas:</p>
+  
+              <ol> 
+                <li> La primera pestaña muestra la serie de caudal pronosticado por
+                  el modelo. Donde se incluyen los rangos de los periodos de retorno, 
+                  los rangos máximos y mínimos calculados para 51 ensambles del ECMWF, 
+                  los pronosticos asociados a los percentiles 25 y 75 de los 51 
+                  ensamble y el resultado del ensamble de alta resolución. Ademas, se 
+                  presenta la tabla donde se muestra el porcentaje de ensambles que 
+                  superan los diferentes periodos de retorno.</li> 
+              <li> La segunda pestaña se muestra la modelación histórica y los 
+                periodos de retorno asociados a esta.</li>
+              <li> La tercera pestaña se muestran las principales graficas asociadas a 
+                las series de tiempo de caudal, siendo estas la serie de caudal medio 
+                diario multianual, caudal medio mensual multianual y la curva de duración 
+                de caudales.</li>
+              <li> Finalmente, en la cuarta pestaña se muestran los links de descarga 
+                de las diferentes series de caudal.</li> 
+              </ol>
+
+        <h5>Recursos adicionales:</h5>
+        <ul>
+          <li><a href="{% url 'hydroviewer_colombia:user_manual' %}">Manual de usuario.</a></li>
+          <li><a href="{% url 'hydroviewer_colombia:technical_manual' %}">Manual tecnico.</a></li>
+          <li><a href="https://www.ecmwf.int/en/about/what-we-do/global-forecasts" target="_blank">ECMWF Global Forecasts</a></li>
+          <li><a href="https://github.com/BYU-Hydroinformatics/hydroviewer.git" target="_blank">Git Hub</a></li>            
+        </ul>
       </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
@@ -390,5 +448,4 @@
 {% endblock %}
 
 {% block app_actions %}
-
 {% endblock %}
